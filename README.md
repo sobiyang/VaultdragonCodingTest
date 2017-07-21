@@ -14,11 +14,15 @@ It uses **restify** to handle server and API logics, uses **SQLite** for databas
 
 - For POST method, HTTP headsers should have ```Content-Type: application/json```
 
+## Notes
+
 - API request timeout: 30 seconds
 
 - SQLite lock table timeout: 5 seconds
 
-- It doesn't handle non-standard characters
+- Non-standard characters not handled
+
+- Potential database issues not considered
 
 - Heroku free account's instance goes to sleep when it receives no traffic in a 30 minute period, which means the first API call might be slow
 
@@ -95,7 +99,7 @@ Example response:
 
 - I have no prior knowledge of restify or Promises, and before this I have no experience in developing a complete Node.js app, or deploying apps on Heroku
 
-- It's fun to learn all these
+- It's fun to learn all these, and ES6 version of JavaScript looks nice, maybe I'll try it later
 
 ## Author
 
