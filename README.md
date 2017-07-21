@@ -1,12 +1,14 @@
 # Motivation
 
-This is my attempt to [Vaultdragon Coding Test](https://gist.github.com/jerelim/3e883999e8d8ef5af2428b364858afc3)
+This is my attempt to [Vaultdragon Coding Test](https://gist.github.com/jerelim/3e883999e8d8ef5af2428b364858afc3).
+
+It uses **restify** to handle server and API logics, uses **SQLite** for database, and **Promises** to simplify the async flow.
 
 ## Usage
 
 - The API is at https://brian-yang-coding-test.herokuapp.com
 
-- A valid API key is required, it should be in "api_key" field in HTTP URL query, and is given below
+- A valid API key is required, it should be in **api_key** field in HTTP URL query, and is given below
 
 - For POST method, HTTP headsers should have ```Content-Type: application/json```
 
@@ -35,12 +37,6 @@ Fields:
 | key             | string    | |
 | timestamp           | long    | optional, in milliseconds  |
 
-Response:
-
-| Parameters             | Data Type | Remarks                       |
-|------------------------|-----------|-------------------------------|
-| value             | string    | |
-
 Example request:
 
 ```http
@@ -56,8 +52,6 @@ Example response:
 ```
 
 ### Upload key-value pair
-
-Format:
 
 ```http
 POST /object/
