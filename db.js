@@ -1,15 +1,18 @@
 var sqlite3 = require('sqlite3').verbose();
 var Promise = require('promise');
-// Instantiate SQLite
-var engine = new sqlite3.Database('localDB.db');
 
-engine.serialize(function () {
-    // Create the key-value table
-    engine.run('CREATE TABLE IF NOT EXISTS KeyValue (id INTEGER PRIMARY KEY AUTOINCREMENT, key TEXT, value BLOB, update_time DATETIME UNIQUE)');
-});
-
+var engine = null;
 // All DB methods
 var db = {
+    // Instantiate SQLite
+    initDB: function (uri) {
+        engine = new sqlite3.Database(uri);
+
+        engine.serialize(function () {
+            // Create the key-value table
+            engine.run('CREATE TABLE IF NOT EXISTS KeyValue (id INTEGER PRIMARY KEY AUTOINCREMENT, key TEXT, value BLOB, update_time DATETIME UNIQUE)');
+        });
+    },
     // Get value by key and timestamp (optional)
     getValueByKey: function (keyIn, timestampIn) {
         return new Promise(function (fulfill, reject) {

@@ -1,13 +1,17 @@
+var config = require('./config');
 var restify = require('restify');
 var errs = require('restify-errors');
-var db = require('./db.js');
+var db = require('./db');
 
 function respond(req, res, next) {
   res.send('hello ' + req.params.name);
   next();
 }
 
-var server = restify.createServer();
+var server = restify.createServer({
+  name: config.name,
+  version: config.version,
+});
 
 server.pre(restify.plugins.pre.userAgentConnection());
 server.use(restify.plugins.queryParser());
@@ -71,6 +75,18 @@ server.on('InternalServer', function (req, res, err, cb) {
   return cb();
 });
 
-server.listen(8080, function () {
+server.on('uncaughtException', (req, res, route, err) => {
+  log.error(err.stack)
+  res.send(err)
+});
+
+server.listen(config.port, function () {
   console.log('%s listening at %s', server.name, server.url);
+  try {
+    db.initDB(config.db.uri);
+  }
+  catch (err) {
+    log.error('SQLite init error: ' + err);
+    process.exit(1);
+  }
 });
