@@ -24,8 +24,10 @@ server.get('/object/:keyIn', function (req, res, next) {
   // Check timestamp exists and is a valid long
   if (req.query.timestamp) {
     timestampIn = parseInt(req.query.timestamp);
-    if (isNaN(timestampIn)) {
-      res.send(new errs.InvalidArgumentError(req.query.timestamp + ' is not a valid timestamp'));
+    // Check timestamp is a long integer representing milliseconds
+    // and number of digits must exceed 12 (after year 2001)
+    if (isNaN(timestampIn) || req.query.timestamp.length < 12) {
+      res.send(new errs.InvalidArgumentError(req.query.timestamp + ' is not a valid timestamp in milliseconds'));
       return next();
     }
   }
