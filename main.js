@@ -3,11 +3,6 @@ var restify = require('restify');
 var errs = require('restify-errors');
 var db = require('./db');
 
-function respond(req, res, next) {
-  res.send('hello ' + req.params.name);
-  next();
-}
-
 var server = restify.createServer({
   name: config.name,
   version: config.version,
@@ -17,6 +12,19 @@ server.pre(restify.plugins.pre.userAgentConnection());
 server.use(restify.plugins.queryParser());
 server.use(restify.plugins.bodyParser());
 
+server.use(function (req, res, next) {
+  // Check API key
+  if (req.query.api_key && req.query.api_key !== null) {
+    if (req.query.api_key === config.api_key) {
+      return next();
+    }
+    else {
+      return next(new errs.NotAuthorizedError("Invalid API key supplied"));
+    }
+  } else {
+    return next(new errs.NotAuthorizedError("No API key supplied"));
+  }
+});
 
 // GET method to get value by key and timestamp (optional)
 server.get('/object/:keyIn', function (req, res, next) {
@@ -33,13 +41,15 @@ server.get('/object/:keyIn', function (req, res, next) {
   }
 
   // DB action
-  db.getValueByKey(req.params.keyIn, timestampIn).done(function (result) {
+  db.getValueByKey(req.params.keyIn, timestampIn).done(function (row) {
+    var result = {
+      'value': row.value
+    }
     res.send(result);
-    next();
   }, function (rejectReason) {
     res.send(new errs.NotFoundError('No key-value pair found'));
-    next();
   });
+  return next();
 });
 
 // POST method to insert a new record
@@ -51,22 +61,19 @@ server.post('/object', function (req, res, next) {
     if (keys.length === 1) {
       db.insertUpdateEntry(keys[0], req.body[keys[0]], req.date()).done(function (result) {
         res.send(result);
-        next();
       }, function (rejectReason) {
         console.log(rejectReason);
         res.send(new errs.InvalidArgumentError(rejectReason));
-        next();
       });
     }
     else {
       res.send(new errs.InvalidArgumentError('Invalid number of key-value pairs'));
-      next();
     }
   }
   else {
     res.send(new errs.InvalidArgumentError('Invalid request body'));
-    next();
   }
+  return next();
 });
 
 server.on('InternalServer', function (req, res, err, cb) {
@@ -78,17 +85,19 @@ server.on('InternalServer', function (req, res, err, cb) {
 });
 
 server.on('uncaughtException', (req, res, route, err) => {
-  log.error(err.stack)
+  console.log(err.stack)
   res.send(err)
+  return next();
 });
 
 server.listen(config.port, function () {
   console.log('%s listening at %s', server.name, server.url);
   try {
     db.initDB(config.db.uri);
+    console.log('SQLite init done');
   }
   catch (err) {
-    log.error('SQLite init error: ' + err);
+    console.log('SQLite init error: ' + err);
     process.exit(1);
   }
 });
