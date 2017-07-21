@@ -9,11 +9,8 @@ It uses **restify** to handle server and API logics, uses **SQLite** for databas
 - The API is at https://brian-yang-coding-test.herokuapp.com
 
 - A valid API key is required, it should be in **api_key** field in HTTP URL query, and is given below
-<<<<<<< HEAD
 
 - The **timestamp** should be in milliseconds
-=======
->>>>>>> 91eeea132d9e65cfad0a3b8b73dee29b8d9c80a3
 
 - For POST method, HTTP headsers should have ```Content-Type: application/json```
 
