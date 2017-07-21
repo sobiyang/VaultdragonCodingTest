@@ -5,9 +5,9 @@ var engine = null;
 // All DB methods
 var db = {
     // Instantiate SQLite
-    initDB: function (uri) {
+    initDB: function (uri, busyTimeout) {
         engine = new sqlite3.Database(uri);
-
+        engine.configure("busyTimeout", busyTimeout * 1000)
         engine.serialize(function () {
             // Create the key-value table
             engine.run('CREATE TABLE IF NOT EXISTS KeyValue (id INTEGER PRIMARY KEY AUTOINCREMENT, key TEXT, value BLOB, update_time DATETIME UNIQUE)');
@@ -30,7 +30,7 @@ var db = {
             });
         });
     },
-    // Insert a new key-value pair, if key exists, replace it
+    // Insert a new key-value pair
     insertUpdateEntry: function (keyIn, valueIn, timestampIn) {
         return new Promise(function (fulfill, reject) {
             engine.run("INSERT OR REPLACE INTO KeyValue (key, value, update_time) VALUES (?, ?, ?)", [keyIn, valueIn, timestampIn], function (err) {

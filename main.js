@@ -8,6 +8,8 @@ var server = restify.createServer({
   version: config.version,
 });
 
+server.server.setTimeout(config.timeout * 1000);
+
 server.pre(restify.plugins.pre.userAgentConnection());
 server.use(restify.plugins.queryParser());
 server.use(restify.plugins.bodyParser());
@@ -42,6 +44,7 @@ server.get('/object/:keyIn', function (req, res, next) {
 
   // DB action
   db.getValueByKey(req.params.keyIn, timestampIn).done(function (row) {
+    // Format the result
     var result = {
       'value': row.value
     }
@@ -76,14 +79,13 @@ server.post('/object', function (req, res, next) {
   return next();
 });
 
+// Internal Server error
 server.on('InternalServer', function (req, res, err, cb) {
-  // if you don't want restify to automatically render the Error object
-  // as a JSON response, you can customize the response by setting the
-  // `body` property of the error
   err.body = 'Sorry but error happens';
   return cb();
 });
 
+// Global uncaught exception
 server.on('uncaughtException', (req, res, route, err) => {
   console.log(err.stack)
   res.send(err)
@@ -93,7 +95,8 @@ server.on('uncaughtException', (req, res, route, err) => {
 server.listen(config.port, function () {
   console.log('%s listening at %s', server.name, server.url);
   try {
-    db.initDB(config.db.uri);
+    // Init database 
+    db.initDB(config.db.uri, config.db.busyTimeout);
     console.log('SQLite init done');
   }
   catch (err) {
