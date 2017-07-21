@@ -6,7 +6,7 @@ This is my attempt to [Vaultdragon Coding Test](https://gist.github.com/jerelim/
 
 - The API is at https://brian-yang-coding-test.herokuapp.com
 
-- A valid API key is required, it should be in "api_key" field in HTTP URL query, and is given below
+- A valid API key is required, it should be in **api_key** field in HTTP URL query, and is given below
 
 - For POST method, HTTP headsers should have ```Content-Type: application/json```
 
@@ -35,12 +35,6 @@ Fields:
 | key             | string    | |
 | timestamp           | long    | optional, in milliseconds  |
 
-Response:
-
-| Parameters             | Data Type | Remarks                       |
-|------------------------|-----------|-------------------------------|
-| value             | string    | |
-
 Example request:
 
 ```http
@@ -56,8 +50,6 @@ Example response:
 ```
 
 ### Upload key-value pair
-
-Format:
 
 ```http
 POST /object/
